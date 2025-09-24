@@ -1,0 +1,67 @@
+data:
+  target: unlabeled
+  data_name_list: 
+    - network_repository
+  sampling_mode: null
+  shuffle: True
+  subgraph_type: ego
+  num_hops: 3  # 2 | 3
+  embedding_dim: 64
+  max_node_num: 200  # 100 | 200
+  max_feat_num: 68
+  type: feat_and_adj
+  batch_size: 1600 # 4000 # 100 nodes: 800 for 23G; 200 nodes: 400 for 43G
+
+sde:
+  x: 
+    type: VE # VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1000
+  adj: 
+    type: VE # VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1000
+
+model:
+  x: ScoreNetworkX
+  adj: ScoreNetworkA
+  conv: GCN
+  num_heads: 4
+  depth: 2
+  adim: 32
+  nhid: 32
+  num_layers: 3
+  num_linears: 2
+  c_init: 2
+  c_hid: 8
+  c_final: 4
+  
+train:
+  name: test
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 100 # 100 # 5000
+  print_interval: 100 # 100 # 1000
+  reduce_mean: False
+  lr: 0.01
+  lr_schedule: True
+  ema: 0.999
+  weight_decay: 0.0001
+  grad_norm: 1.0
+  lr_decay: 0.999
+  eps: 1.0e-5
+
+sampler:
+  predictor: Euler
+  corrector: Langevin
+  snr: 0.05
+  scale_eps: 0.7
+  n_steps: 1
+
+sample:
+  use_ema: False
+  noise_removal: True
+  probability_flow: False
+  eps: 1.0e-4
+  seed: 11

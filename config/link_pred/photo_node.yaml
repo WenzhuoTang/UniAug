@@ -1,0 +1,77 @@
+data: 
+  target: link_prediction
+
+  data_name: photo
+  ## feature
+  feature_flag: False
+  ## segment
+  segment: True
+  thres: 1000  # 2000
+  return_list: False
+  fill_zeros: False
+  num_hops: 0
+
+model:
+  target: GNN
+
+  gnn_type: gcn  # gcn | gat | sage
+  act: relu
+  norm: null
+  hidden_channels: 128
+  out_channels: 128
+  num_layers: 3
+  heads: 8
+  dropout: 0.
+
+predictor:
+  target: mlp
+
+  in_channels: 128
+  hidden_channels: 128
+  out_channels: 1
+  num_layers: 3
+  dropout: 0.
+  
+train:
+  patience: 100
+  eval_steps: 1
+  lr: 1.0e-2
+  weight_decay: 1.0e-4
+  lr_schedule: False
+  epochs: 10000
+  batch_size: 100000
+
+augment:
+  ckpt_path: checkpoints/network_repository/nr_gnn_gat-Feb06-21:31:39.pth
+    # nr_gnn_gat-Feb06-21:31:39.pth
+    # nr_gnn_gcn-Feb08-19:31:09.pth
+    # nr_gnn_sage-Feb09-02:20:36.pth
+    # nr_tgnn-Feb08-21:00:07.pth
+  segment_flag: False
+  batch_size: 1
+
+  guidance_config:
+    num_epochs: 1000
+    batch_size: 512
+    save_flag: False
+
+    diffusion:
+      guidance_type: node_degree
+      freeze_model: True
+
+    guidance:
+      target: node
+
+      num_layers: 2
+      output_dim: 1
+      dropout: 0.1
+      stop_grad: True  # acccording to freeze_model
+
+  sample:
+    inpaint_flag: True
+    inpaint_every_step: True
+    guidance_flag: True
+    step_size: 0.1  # 0.1
+    stability_coef: 1.0e-2  # 1.0e-2
+    num_steps: 5  # 5
+    thres: 0.9999

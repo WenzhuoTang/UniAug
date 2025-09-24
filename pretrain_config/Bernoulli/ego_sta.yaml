@@ -1,0 +1,62 @@
+data:
+  target: generic
+  ## dataset
+  data_name: ego
+  dir_path: ./data/misc
+  ## feature
+  degree: True
+  feature_flag: True
+  ## loader
+  type: pyg
+  batch_size: 16  # thres ?: ? for ?G
+
+diffusion:
+  target: bernoulli
+
+  num_timesteps: 128
+  beta_type: linear_cumprod  # linear_cumprod | linear | cos | sigmoid
+  focal: -1
+  loss_type: mean  # weighted | mean
+  p_flip: True
+  lbd: 0.1
+  pi: 0.
+
+model:
+  target: STA  # GNN | STA | GT
+
+  in_channels: 100
+  out_channels: 1
+  hidden_channels: 64
+  dropout: 0.1
+  K: 3
+  num_heads: 4
+  ind_gamma: True
+  gamma_softmax: True
+  multi_concat: True
+  global_attn: True
+  agg: concat  # concat | mul
+  
+train:
+  name: ego_gnn
+  seed: 10
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 10000 # 100 # 5000
+  eval_interval: 100 # 100 # 1000
+  lr: 1.0e-3
+  lr_schedule: True
+  lr_decay: 0.999
+  ema: 0.999
+  weight_decay: 5.0e-8
+  grad_norm: 1.0
+
+sample:
+  # ckpt_path: checkpoints/ogbn_arxiv/arxiv_gnn_gcn-Jan19-01:45:14.pth
+  t_start: 1
+  noisy_input: True
+  t_sample: 0
+  impaint_flag: False
+  temp: 1.0
+  num_sample_steps: null
+  step_size: 0.1
+  stability_coef: 1e-2
+  num_steps: 5

@@ -1,0 +1,78 @@
+data:
+  target: downstream_segments
+  ## dataset
+  task: NC
+  data_name: ogbn-arxiv
+  ## feature
+  out_channels: null
+  stru_feat_principle: null  # null | concat | replace
+  ## segment
+  segment: True
+  return_list: True
+  thres: 500
+  max_node_num: null
+  fill_zeros: False
+  ## split
+  split_data: True
+  split_dict:
+    train: 0.8
+    valid: 0.1
+    test: 0.1
+  ## loader
+  type: pyg
+  batch_size: 16  # thres ?: ? for ?G
+
+diffusion:
+  target: bernoulli
+
+  num_timesteps: 128
+  beta_type: linear_cumprod  # linear_cumprod | linear | cos | sigmoid
+  focal: -1
+  loss_type: mean  # weighted | mean
+  p_flip: True
+  lbd: 0.1
+  pi: 0.
+
+model:
+  target: STA  # GNN | STA | GT
+
+  in_channels: 128
+  out_channels: 1
+  hidden_channels: 64
+  dropout: 0.1
+  K: 3
+  num_heads: 4
+  ind_gamma: True
+  gamma_softmax: True
+  multi_concat: True
+  global_attn: True
+  agg: concat  # concat | mul
+  
+train:
+  name: ogbn_arxiv_sta
+  seed: 10
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 10000 # 100 # 5000
+  print_interval: 100 # 100 # 1000
+  lr: 1.0e-3
+  lr_schedule: True
+  lr_decay: 0.999
+  ema: 0.999
+  weight_decay: 5.0e-8
+  grad_norm: 1.0
+
+sample:
+  ckpt_path: checkpoints/ogbn_arxiv/arxiv_sta-Jan19-01:47:20.pth
+    # arxiv_sta-Jan19-01:47:20.pth
+    # arxiv_sta_p.02-Jan19-02:01:34.pth
+    # arxiv_sta_p.5-Jan19-01:58:15.pth
+
+  t_start: 1
+  noisy_input: True
+  t_sample: 0
+  impaint_flag: False
+  temp: 1.0
+  num_sample_steps: null
+  step_size: 0.1
+  stability_coef: 1e-2
+  num_steps: 5

@@ -1,0 +1,83 @@
+data: 
+  target: link_prediction
+
+  data_name: ogbl-collab
+  # feature
+  feature_flag: False
+  ## segment
+  segment: True
+  thres: 1000
+  return_list: False
+  fill_zeros: False
+  num_hops: 0
+
+model:
+  target: GNN
+
+  gnn_type: gcn  # gcn | gat | sage
+  act: relu
+  norm: null
+  hidden_channels: 256
+  out_channels: 256
+  num_layers: 3
+  heads: 8
+  dropout: 0.
+
+predictor:
+  target: mlp
+
+  in_channels: 256
+  hidden_channels: 256
+  out_channels: 1
+  num_layers: 3
+  dropout: 0.
+  
+train:
+  patience: 100
+  eval_steps: 1
+  eval_start: 300
+  lr: 1.0e-2  # 1.0e-3
+  weight_decay: 0.
+  lr_schedule: False
+  epochs: 10000
+  batch_size: 100000  # 65536
+
+augment:
+  ckpt_path_dict:
+    ## nr_snap_clus
+    0: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus0_l4_deg_lin-r.1-Feb27-02:42:05.pth
+    1: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus1_l4_deg_lin-r.1-Feb27-02:45:36.pth
+    2: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus2_l4_deg_lin-r.1-Feb27-02:43:23.pth
+    3: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus3_l4_deg_lin-r.1-Feb27-02:49:35.pth
+    4: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus4_l4_deg_lin-r.1-Feb27-02:47:28_7000.pth
+    5: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus5_l4_deg_lin-r.1-Feb27-02:47:49.pth
+    6: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus6_l4_deg_lin-r.1-Feb27-02:54:47.pth
+    7: checkpoints/network_repository_large_network_repository_snap/nr_snap_clus_gnn_gt_clus7_l4_deg_lin-r.1-Feb27-02:51:42.pth
+  segment_flag: True
+  batch_size: 4
+
+  guidance_config:
+    num_epochs: 1000
+    batch_size: 1024
+    save_flag: False
+
+    diffusion:
+      guidance_type: node_degree
+      freeze_model: True
+
+    guidance:
+      target: node
+
+      num_layers: 2
+      output_dim: 1
+      dropout: 0.1
+      stop_grad: True  # acccording to freeze_model
+
+  sample:
+    inpaint_flag: True
+    inpaint_every_step: True
+    guidance_flag: True
+    step_size: 0.1  # 0.1
+    stability_coef: 1.0e-2  # 1.0e-2
+    num_steps: 5  # 5
+    thres: 0.9999

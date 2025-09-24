@@ -1,0 +1,63 @@
+data:
+  target: generic
+  ## dataset
+  data_name: community
+  dir_path: ./data/misc
+  ## feature
+  degree: True
+  feature_flag: False
+  ## loader
+  type: pyg
+  batch_size: 16  # thres ?: ? for ?G
+
+diffusion:
+  target: bernoulli
+
+  num_timesteps: 128
+  beta_type: linear_cumprod  # linear_cumprod | linear | cos | sigmoid
+  focal: -1
+  loss_type: mean  # weighted | mean
+  p_flip: True
+  lbd: 0.1
+  pi: 0.
+
+model:
+  target: TGNN  # GNN | STA | GT | TGNN
+
+  out_channels: 1
+  dim: 64
+  num_heads:
+    - 8
+    - 8
+    - 8
+    - 8
+    - 1
+  dropout: 0.1
+  norm: Null
+  agg: concat  # concat | mul | sum
+
+train:
+  name: ego_tgnn
+  seed: 10
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 10000 # 100 # 5000
+  eval_interval: 500 # 100 # 1000
+  lr: 1.0e-3
+  lr_schedule: True
+  lr_decay: 0.999
+  ema: 0.999
+  weight_decay: 5.0e-8
+  grad_norm: 1.0
+
+sample:
+  ckpt_path: checkpoints/community/comm_tgnn-Jan30-00:35:09.pth
+
+  t_start: 1
+  noisy_input: True
+  t_sample: 0
+  impaint_flag: False
+  temp: 1.0
+  num_sample_steps: null
+  step_size: 0.1
+  stability_coef: 1e-2
+  num_steps: 5

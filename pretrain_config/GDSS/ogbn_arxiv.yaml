@@ -1,0 +1,68 @@
+data:
+  target: full
+  task: NC
+  data_name: ogbn-arxiv
+  shuffle: True
+  out_channels: null
+  stru_feat_principle: null  # null | concat | replace
+  segment: True
+  return_list: True
+  thres: 240
+  max_node_num: 250
+  max_feat_num: 128
+  type: feat_and_adj
+  batch_size: 400  # 250 nodes: 100 for 18G; 500 nodes: 25 for 18G; 1000 nodes: 5 for 14G
+
+sde:
+  x: 
+    type: VE # VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1000
+  adj: 
+    type: VE # VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1000
+
+model:
+  x: ScoreNetworkX
+  adj: ScoreNetworkA
+  conv: GCN
+  num_heads: 4
+  depth: 2
+  adim: 32
+  nhid: 32
+  num_layers: 3
+  num_linears: 2
+  c_init: 2
+  c_hid: 8
+  c_final: 4
+  
+train:
+  name: test
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 10000 # 100 # 5000
+  print_interval: 100 # 100 # 1000
+  reduce_mean: False
+  lr: 0.01
+  lr_schedule: True
+  ema: 0.999
+  weight_decay: 0.0001
+  grad_norm: 1.0
+  lr_decay: 0.999
+  eps: 1.0e-5
+
+sampler:
+  predictor: Euler
+  corrector: Langevin
+  snr: 0.05
+  scale_eps: 0.7
+  n_steps: 1
+
+sample:
+  use_ema: False
+  noise_removal: True
+  probability_flow: False
+  eps: 1.0e-4
+  seed: 11

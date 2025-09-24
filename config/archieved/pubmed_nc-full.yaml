@@ -1,0 +1,61 @@
+data: 
+  target: full
+  task: NC  # NC | LP
+  data_name: pubmed  # cora | citeseer | pubmed
+  type: pyg
+  out_channels: null
+  stru_feat_principle: null  # null | concat | replace
+  segment: True  # True | False
+  thres: 240
+  max_node_num: 250
+  batch_size: 128
+
+model:
+  target: SimpleGCN
+  hidden_channels: 128
+  dropout: 0.5  # 0
+  
+train:
+  patience: 100 # 50
+  lr: 1e-2  # 1e-3
+  wdecay: 0  # 5e-8
+  epochs: 500
+  initw_name: default  # default | normal | xavier | kaiming | orthogonal
+
+sde:
+  x: 
+    type: VE  # VE | VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1  # same as augment.out_steps
+  adj: 
+    type: VE  # VE | VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1  # same as augment.out_steps
+
+augment:
+  ckpt_path: checkpoints/network_repository/3_hop-max_200-Nov30-17:40:05_3200.pth
+    # checkpoints/both/all/2_hop-max_100-Nov05-15:36:49.pth
+    # checkpoints/ogbn_arxiv/thres_240-max_250-Jan03-15:37:32.pth
+    # checkpoints/ogbn_arxiv/thres_475-max_500-Jan03-18:57:26.pth
+    # checkpoints/ogbn_arxiv/thres_950-max_1000-Jan03-16:28:49.pth
+  feat_dim: 68  # same as data.max_feat_num
+  n_negative: 50 # 50 # 100 # 40
+  out_steps: 1
+  topk: 128 # 10
+  aug_batch: 1000
+  start: 50 # 20
+  iteration: 5 # 5
+  strategy: add_accumulate # replace_once | add_once | replace_accumulate | add_accumulate
+  snr: 0.9 # 0.5
+  scale_eps: 0. # 0
+  perturb_ratio: 0.5 # 0.5  # 1e-2 # 1e-8
+  n_steps: 1 # 1
+  n_jobs: 0
+  pooling: mean  # mean | mean | sum | None
+  aug_x: True  # True | False
+  aug_adj: False  # True | False
+  feat_to_compare: extract  # sum | extract
+  augment_valid: False  # True | False
+  augment_test: False  # True | False

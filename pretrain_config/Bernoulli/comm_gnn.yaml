@@ -1,0 +1,69 @@
+data:
+  target: generic
+  ## dataset
+  data_name: community
+  dir_path: ./data/misc
+  ## feature
+  degree: True
+  feature_flag: True
+  ## loader
+  type: pyg
+  batch_size: 16  # thres ?: ? for ?G
+
+diffusion:
+  target: bernoulli
+
+  num_timesteps: 128
+  beta_type: linear_cumprod  # linear_cumprod | linear | cos | sigmoid
+  focal: -1
+  loss_type: mean  # weighted | mean
+  p_flip: True
+  lbd: 0.1
+  pi: 0.
+
+model:
+  target: GNN  # GNN | STA | GT
+
+  in_channels: 100
+  out_channels: 1
+  hidden_channels: 64
+  num_layers: 5
+  heads: 8
+  gnn_type: gcn  # gcn | sage | gat
+  dropout: 0.1
+  act: relu
+  norm: batchnorm
+  agg: concat  # concat | mul
+  
+train:
+  name: ego_gnn
+  seed: 10
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 10000 # 100 # 5000
+  eval_interval: 500 # 100 # 1000
+  lr: 1.0e-3
+  lr_schedule: True
+  lr_decay: 0.999
+  ema: 0.999
+  weight_decay: 5.0e-8
+  grad_norm: 1.0
+
+sample:
+  ckpt_path: checkpoints/community/comm_gnn_gcn-Jan30-00:31:05.pth
+    # comm_gnn_gat-Jan30-00:53:15.pth
+    # comm_gnn_gcn-Jan30-00:31:05.pth
+    # comm_gnn_sage-Jan30-00:30:14.pth
+    # comm_gnn_gcn_noflip-Jan30-18:05:42.pth
+    # comm_gnn_gcn_noflip_nolbd-Jan30-18:08:53.pth
+
+  t_start: 1
+  t_sample: 0
+  temp: 1.0
+  num_sample_steps: null
+  # impaint
+  noisy_input: True
+  impaint_flag: False
+  # guidance
+  step_size: 0.1
+  stability_coef: 1e-2
+  num_steps: 5

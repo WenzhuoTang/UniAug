@@ -1,0 +1,65 @@
+data: 
+  target: graph_prop_pred
+
+  data_name: Enzymes
+  ## loader
+  batch_size: 128
+
+model:
+  target: GIN
+
+  hidden_channels: 64
+  num_layers: 5
+  dropout: 0.5
+  train_eps: True
+  pooling: sum  # mean
+  
+train:
+  epochs: 1000
+  lr: 1.0e-2
+  step_size: 50
+  gamma: 0.5
+  patience: 500
+
+  ## mixup
+  mixup_flag: True
+  gm_num_layers: 5
+  gm_hidden: 64
+  gm_batch_size: 128
+  gm_lr: 1.0e-3
+  gm_epochs: 10
+  alpha: 0.1
+  sim_method: abs_diff
+
+augment:
+  ckpt_path: checkpoints/network_repository/full_nr_gnn_gt_l4_dnnm-0_deg_lin_self_guide-r.1-Mar08-02:01:14.pth
+  subset_ratio: 0.1
+  batch_size: 128
+  num_repeats: 1
+  replace_flag: False
+  augment_valid: False
+  augment_test: False
+
+  guidance_config:
+    num_epochs: 1000
+    batch_size: 128
+    save_flag: False
+
+    diffusion:
+      guidance_type: graph_class
+      freeze_model: True
+
+    guidance:
+      target: graph
+
+      num_layers: 2
+      output_dim: 1
+      dropout: 0.1
+      stop_grad: True  # acccording to freeze_model
+
+  sample:
+    guidance_flag: True
+    step_size: 0.1
+    stability_coef: 1.0e-2
+    num_steps: 5
+    thres: null

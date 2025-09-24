@@ -1,0 +1,68 @@
+data:
+  target: generic
+  ## dataset
+  data_name: community
+  dir_path: ./data/misc
+  ## feature
+  degree: True
+  feature_flag: True
+  ## loader
+  type: pyg
+  batch_size: 16  # thres ?: ? for ?G
+
+diffusion:
+  target: binary
+
+  # noise schedule
+  num_timesteps: 128
+  schedule_type: linear  # linear | cosine
+  # parameterization
+  loss_type: vb_kl  # vb_kl | vb_ce_xt
+  parametrization: x0
+  # other
+  sample_time_method: importance  # importance | uniform
+  pi: 1.0e-12
+
+model:
+  target: STA  # GNN | STA | GT
+
+  in_channels: 100
+  out_channels: 2
+  hidden_channels: 64
+  dropout: 0.1
+  K: 3
+  num_heads: 4
+  ind_gamma: True
+  gamma_softmax: True
+  multi_concat: True
+  global_attn: True
+  agg: concat  # concat | mul
+  
+train:
+  name: ego_gnn
+  seed: 10
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 10000 # 100 # 5000
+  eval_interval: 50 # 100 # 1000
+  lr: 1.0e-3
+  lr_schedule: True
+  lr_decay: 0.999
+  ema: 0.999
+  weight_decay: 5.0e-8
+  grad_norm: 1.0
+
+sample:
+  ckpt_path: checkpoints/community/comm_sta-Jan30-00:58:12.pth
+
+  sample_from_empty: False
+  t_start: 1
+  t_sample: 0
+  temp: 1.0
+  num_sample_steps: null
+  # impaint
+  noisy_input: True
+  impaint_flag: False
+  # guidance
+  step_size: 0.1
+  stability_coef: 1e-2
+  num_steps: 5

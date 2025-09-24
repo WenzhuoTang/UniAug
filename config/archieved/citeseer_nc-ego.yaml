@@ -1,0 +1,69 @@
+data: 
+  target: downstream
+  task: NC  # NC | LP
+  data_name: citeseer  # cora | citeseer | pubmed
+  type: pyg
+  out_channels: null
+  sampling_mode: null
+  subgraph_type: ego
+  num_hops: 2  # 2 | 3
+  embedding_dim: 64
+  max_node_num: 200  # 100 | 200
+  max_feat_num: 68
+  batch_size: 128
+  add_self_loop: True
+
+model:
+  gnn_type: gcn  # gcn | gin
+  norm_layer: batch_norm
+    # {}_{}, first: batch | instance | layer | graph | size | pair | group
+    # second: norm | size | notrack (only for batch_notrack)
+  # input_dim: 3771  # max_feat_num + feat_dim; FEAT_DIM = {'citeseer':3703, 'pubmed': 500, 'cora': 1433}
+  emb_dim: 512 # 256 # 128
+  num_layers: 1 # 1 # 2
+  graph_pooling: sum  # mean # mean | sum | max
+  subset: True  # False
+  k: 1
+  predictor_type: ffn  # True
+  drop_ratio: 0.  # 0.
+  
+train:
+  patience: 50 # 50
+  lr: 1e-3  # 1e-3
+  wdecay: 5e-8  # 5e-8
+  epochs: 500
+  initw_name: default  # default | normal | xavier | kaiming | orthogonal
+
+sde:
+  x: 
+    type: VE  # VE | VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1  # same as augment.out_steps
+  adj: 
+    type: VE  # VE | VP
+    beta_min: 0.1
+    beta_max: 1.0
+    num_scales: 1  # same as augment.out_steps
+
+augment:
+  ckpt_path: checkpoints/network_repository/2_hop-max_100-Nov29-00:23:23_8000.pth
+  feat_dim: 68  # same as data.max_feat_num
+  n_negative: 1 # 40
+  out_steps: 1
+  topk: 128 # 10
+  aug_batch: 1000
+  start: 20 # 20
+  iteration: 5 # 5
+  strategy: replace_once # replace_once | add_once | replace_accumulate | add_accumulate
+  snr: 0.5 # 0.5
+  scale_eps: 0 # 0
+  perturb_ratio: 1e-8 # 1e-8
+  n_steps: 1 # 1
+  n_jobs: 0
+  pooling: mean  # mean | mean | sum | None
+  aug_x: True  # True | False
+  aug_adj: False  # True | False
+  feat_to_compare: extract  # sum | extract
+  augment_valid: True
+  augment_test: True

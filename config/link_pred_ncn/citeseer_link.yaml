@@ -1,0 +1,85 @@
+data: 
+  target: link_prediction
+
+  data_name: citeseer  # cora | citeseer | pubmed
+  ## feature
+  feature_flag: False
+  ## segment
+  segment: True
+  thres: 1000
+  return_list: False
+  fill_zeros: False
+  num_hops: 0
+
+model:
+  target: NCNGCN
+
+  hidden_channels: 256
+  out_channels: 256
+  num_layers: 1
+  dropout: 0.1
+  ln: True
+  conv_fn: puregcn
+  jk: True
+  edrop: 0.0
+  xdropout: 0.4
+  taildropout: 0.0
+
+predictor:
+  target: ncn
+
+  in_channels: 256
+  hidden_channels: 256
+  out_channels: 1
+  use_xlin: True
+  tailact: True
+  twolayerlin: True
+  beta: 1.0
+  num_layers: 3
+  dropout: 0.1
+  edrop: 0.0
+  ln: True
+
+train:
+  patience: 100
+  eval_steps: 1
+  lr: 1.0e-3
+  weight_decay: 1.0e-7
+  lr_schedule: False
+  epochs: 100
+  selection: last
+  batch_size: 1024
+  maskinput: True
+
+augment:
+  ckpt_path: checkpoints/network_repository/full_nr_github_gnn_gt_l4_dnnm-50_deg_lin_self_guide-r.1-Mar29-21:15:57.pth
+  segment_flag: False
+  batch_size: 1
+
+  guidance_config:
+    num_epochs: 1000
+    batch_size: 1
+    save_flag: False
+
+    diffusion:
+      guidance_type: link_pred
+      freeze_model: True
+
+    guidance:
+      target: link
+
+      num_layers: 3
+      output_dim: 1
+      dropout: 0.3
+      agg: mul
+      stop_grad: True  # acccording to freeze_model
+      return_prob: True
+
+  sample:
+    inpaint_flag: True
+    inpaint_every_step: True
+    guidance_flag: True
+    step_size: 0.1  # 0.1
+    stability_coef: 1.0e-2  # 1.0e-2
+    num_steps: 5  # 5
+    thres: 0.999

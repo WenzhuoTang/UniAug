@@ -1,0 +1,90 @@
+data: 
+  target: link_prediction
+
+  data_name: photo
+  ## feature
+  feature_flag: False
+  ## segment
+  segment: True
+  thres: 1000
+  return_list: False
+  fill_zeros: False
+  num_hops: 0
+
+model:
+  target: NCNGCN
+
+  hidden_channels: 256
+  out_channels: 256
+  num_layers: 1
+  dropout: 0.5
+  ln: True
+  conv_fn: puregcn
+  jk: True
+  edrop: 0.0
+  xdropout: 0.4
+  taildropout: 0.0
+
+predictor:
+  target: ncnc
+
+  in_channels: 256
+  hidden_channels: 256
+  out_channels: 1
+  depth: 1
+  splitsize: -1
+  scale: 6.5
+  offset: 4.4
+  trainresdeg: -1
+  testresdeg: -1
+  pt: 0.75
+  alpha: 0.4
+  use_xlin: True
+  tailact: True
+  twolayerlin: True
+  beta: 1.0
+  num_layers: 2
+  dropout: 0.5
+  edrop: 0.0
+  ln: True
+
+train:
+  patience: 10
+  eval_steps: 5
+  lr: 1.0e-3
+  weight_decay: 1.0e-7
+  lr_schedule: False
+  epochs: 10000
+  batch_size: 1024
+  maskinput: True
+
+augment:
+  ckpt_path: checkpoints/network_repository/full_nr_github_gnn_gt_l4_dnnm-50_deg_lin_self_guide-r.1-Mar29-21:15:57.pth
+  segment_flag: False
+  batch_size: 1
+
+  guidance_config:
+    num_epochs: 1000
+    batch_size: 512
+    save_flag: False
+
+    diffusion:
+      guidance_type: node_degree
+      freeze_model: True
+
+    guidance:
+      target: node
+
+      num_layers: 2
+      output_dim: 1
+      dropout: 0.1
+      stop_grad: True  # acccording to freeze_model
+
+  sample:
+    inpaint_flag: True
+    inpaint_every_step: True
+    guidance_flag: True
+    step_size: 0.1  # 0.1
+    stability_coef: 1.0e-2  # 1.0e-2
+    num_steps: 5  # 5
+    thres: 0.9999

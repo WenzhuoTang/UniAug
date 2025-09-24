@@ -1,0 +1,81 @@
+data:
+  target: unlabeled_segments
+
+  ## dataset
+  data_name_list: 
+    - network_repository
+  dir_path: ./data/misc
+  ## feature
+  feature_flag: False
+  ## segment
+  segment: True
+  thres: 1000  # 2000
+  return_list: True
+  fill_zeros: False
+  ## clustering
+  cluster_path: 'data/misc/large_network_repository_network_repository_snap/processed/all_8clusters.pt'
+  ## loader
+  type: pyg
+  batch_size: 16  # thres ?: ? for ?G
+  cluster: 0
+
+diffusion:
+  target: binary
+
+  # noise schedule
+  num_timesteps: 128
+  schedule_type: linear  # linear | cosine
+  # parameterization
+  loss_type: vb_kl  # vb_kl | vb_ce_xt
+  parametrization: x0  # x0 | xt
+  # other
+  sample_time_method: importance  # importance | uniform
+  pi: 1.0e-12
+
+model:
+  target: GNN  # GNN | STA | GT
+
+  emb_type: degree_linear  # degree_embedding | degree_linear
+  out_channels: 2
+  hidden_channels: 128
+  num_layers: 4
+  heads: 8
+  gnn_type: gcn  # gcn | sage | gat
+  dropout: 0.1
+  act: relu
+  norm: batchnorm
+  agg: concat  # concat | mul
+
+train:
+  name: ego_gnn
+  seed: 10
+  num_epochs: 10000 # 1000 # 5000
+  save_interval: 1000 # 100 # 5000
+  eval_interval: 10001 # 100 # 1000
+  lr: 1.0e-3
+  lr_schedule: True
+  lr_decay: 0.999
+  ema: 0.999
+  weight_decay: 5.0e-8
+  grad_norm: 1.0
+
+sample:
+  ckpt_path: checkpoints/community/comm_gnn_gcn-Jan30-00:31:05.pth
+    # comm_gnn_gat-Jan30-00:53:15.pth
+    # comm_gnn_gcn-Jan30-00:31:05.pth
+    # comm_gnn_sage-Jan30-00:30:14.pth
+    # comm_gnn_gcn_noflip-Jan30-18:05:42.pth
+    # comm_gnn_gcn_noflip_nolbd-Jan30-18:08:53.pth
+
+  sample_from_empty: False
+  t_start: 1
+  t_sample: 0
+  temp: 1.0
+  num_sample_steps: null
+  # impaint
+  noisy_input: True
+  impaint_flag: False
+  # guidance
+  step_size: 0.1
+  stability_coef: 1e-2
+  num_steps: 5
